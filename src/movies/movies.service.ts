@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Movie } from './entities/movie.entity';
-import { CreateMovieDto } from 'src/movies/dto/create-movie.dto';
-import { UpdateMovieDto } from 'src/movies/dto/update-movie.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateMovieDto } from 'src/movies/dto/create-movie.dto';
+import { UpdateMovieDto } from 'src/movies/dto/update-movie.dto';
+import { Movie } from './entities/movie.entity';
 
 @Injectable()
 export class MoviesService {
@@ -11,35 +11,32 @@ export class MoviesService {
     @InjectModel('Movie') private readonly movieModel: Model<Movie>,
   ) {}
 
-  private movies: Movie[] = [];
-
   async getAll(): Promise<Movie[]> {
     return this.movieModel.find().exec();
   }
 
-  getOne(id: number): Movie {
-    const movie = this.movies.find((movie) => movie.id === id);
+  async getOne(id: string): Promise<Movie> {
+    const movie = await this.movieModel.findById(id).exec();
     if (!movie) {
-      throw new NotFoundException(`Movie with ID ${id} not found `);
+      throw new NotFoundException(`Movie with ID ${id} not found`);
     }
     return movie;
   }
 
-  deleteOne(id: number) {
-    this.getOne(id);
-    this.movies = this.movies.filter((movie) => movie.id !== id);
+  async deleteOne(id: string): Promise<Movie> {
+    await this.getOne(id);
+    return this.movieModel.findByIdAndDelete(id).exec();
   }
 
-  create(movieData: CreateMovieDto) {
-    this.movies.push({
-      id: this.movies.length + 1,
-      ...movieData,
-    });
+  async create(movieData: CreateMovieDto): Promise<Movie> {
+    const createdMovie = new this.movieModel(movieData);
+    return createdMovie.save();
   }
 
-  update(id: number, updateData: UpdateMovieDto) {
-    const movie = this.getOne(id);
-    this.deleteOne(id);
-    this.movies.push({ ...movie, ...updateData });
+  async update(id: string, updateData: UpdateMovieDto): Promise<Movie> {
+    await this.getOne(id);
+    return this.movieModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .exec();
   }
 }

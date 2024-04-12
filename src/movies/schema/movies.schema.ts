@@ -4,9 +4,6 @@ import { Document } from 'mongoose';
 @Schema()
 export class Movie extends Document {
   @Prop({ required: true })
-  id: number;
-
-  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
