@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateMovieDto } from 'src/dto/create-movie.dto';
-import { UpdateMovieDto } from 'src/dto/update-movie.dto';
+import { CreateMovieDto } from 'src/movies/dto/create-movie.dto';
+import { UpdateMovieDto } from 'src/movies/dto/update-movie.dto';
 import { Movie } from './entities/movie.entity';
 import { MoviesService } from './movies.service';
 
