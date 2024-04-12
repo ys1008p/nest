@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { UpdateMovieDto } from 'src/dto/update-movie.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -43,7 +44,7 @@ export class MoviesController {
   }
 
   @Patch(':id')
-  patch(@Param('id') movieId: number, @Body() updateData: any) {
+  patch(@Param('id') movieId: number, @Body() updateData: UpdateMovieDto) {
     return this.moviesService.update(movieId, updateData);
   }
 }
